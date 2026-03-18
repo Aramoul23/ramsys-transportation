@@ -10,8 +10,10 @@ venv/
 .env
 .env.*
 
-# Database
+# Database and backups
 *.db
+*.db.*
+*.backup_*
 
 # OSRM routing data
 *.osrm*
@@ -20,3 +22,8 @@ venv/
 
 # Logs
 *.log
+server_log.txt
+
+# Excel / Data
+*.xlsx
+*.xls
