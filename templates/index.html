@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Route Selection | Ramsys</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --surface: #ffffff;
+            --bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+        
+        .header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .instruction {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            font-size: 1.1rem;
+        }
+        
+        .bus-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .bus-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 20px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        
+        .bus-card:active {
+            transform: scale(0.98);
+            background: #f1f5f9;
+        }
+        
+        .bus-info h2 {
+            margin: 0 0 4px 0;
+            font-size: 1.25rem;
+        }
+        
+        .bus-meta {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .chevron {
+            color: var(--text-muted);
+            font-size: 1.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 12px;
+            border: 1px dashed #cbd5e1;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Ramsys Transport</h1>
+    </div>
+
+    <div class="container">
+        <p class="instruction">Select your bus to view today's route:</p>
+
+        <div class="bus-list">
+            {% if buses %}
+                {% for bus in buses %}
+                <a href="/driver/{{ bus.id }}" class="bus-card">
+                    <div class="bus-info">
+                        <h2>{{ bus.driver_name }} (Bus {{ bus.id }})</h2>
+                        <p class="bus-meta">{{ bus.bus_type }} • {{ bus.capacity }} Seats</p>
+                    </div>
+                    <div class="chevron">›</div>
+                </a>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <h3>No Active Routes Found</h3>
+                    <p>The optimizer has not been run or no students are assigned to active buses today.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
