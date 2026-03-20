@@ -1,0 +1,14 @@
+✅ Homepage (public):         200
+✅ Admin (no auth):            401
+✅ Admin (wrong password):     401
+✅ Admin (correct auth):       200
+✅ Driver route (public):      200
+✅ Get scenario:               200
+✅ Optimization status:        200
+✅ Sibling audit:              200 (17 clusters flagged)
+✅ AI chat:                    200
+✅ AI status:                  200
+✅ Export students:            200
+✅ Scenario estimate:          200
+✅ AI chat response:           Working
+✅ Scenario config:            Working

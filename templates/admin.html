@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- DataTables CSS for Premium Grid UI -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css">
     <link rel="stylesheet" type="text/css"
         href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
@@ -27,9 +26,7 @@
             --border: #e2e8f0;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -88,29 +85,12 @@
             margin-bottom: -1px;
         }
 
-        .tab-btn:hover {
-            color: var(--primary);
-        }
+        .tab-btn:hover { color: var(--primary); }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
-        /* --- TAB CONTENT --- */
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .container {
-            padding: 32px;
-            max-width: 1300px;
-            margin: 0 auto;
-        }
+        .container { padding: 32px; max-width: 1300px; margin: 0 auto; }
 
         /* --- CARDS & GRIDS --- */
         .stats-grid {
@@ -159,16 +139,8 @@
             gap: 16px;
         }
 
-        .control-info h2 {
-            margin: 0 0 6px 0;
-            font-size: 1rem;
-        }
-
-        .control-info p {
-            margin: 0;
-            color: var(--text-muted);
-            font-size: 0.875rem;
-        }
+        .control-info h2 { margin: 0 0 6px 0; font-size: 1rem; }
+        .control-info p { margin: 0; color: var(--text-muted); font-size: 0.875rem; }
 
         /* --- BUTTONS --- */
         .btn {
@@ -189,17 +161,8 @@
             white-space: nowrap;
         }
 
-        .btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        .btn:disabled {
-            background: var(--text-muted);
-            cursor: not-allowed;
-            transform: none;
-            opacity: 0.7;
-        }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; opacity: 0.7; }
 
         /* --- TABLE --- */
         .table-card {
@@ -218,183 +181,68 @@
             border-bottom: 1px solid var(--border);
         }
 
-        .table-card-header h2 {
-            margin: 0;
-            font-size: 1rem;
-            font-weight: 700;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th,
-        td {
-            padding: 14px 24px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background: var(--bg);
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.78rem;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background: #f8fafc;
-        }
+        .table-card-header h2 { margin: 0; font-size: 1rem; font-weight: 700; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 14px 24px; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg); color: var(--text-muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8fafc; }
 
         /* --- BADGES --- */
-        .badge {
+        .badge { display: inline-block; padding: 3px 12px; border-radius: 99px; font-size: 0.8rem; font-weight: 600; }
+        .badge-blue { background: #dbeafe; color: #1e40af; }
+        .badge-red { background: #fee2e2; color: #991b1b; }
+        .badge-green { background: #d1fae5; color: #065f46; }
+        .badge-yellow { background: #fef3c7; color: #92400e; }
+        .badge-gray { background: #f1f5f9; color: var(--text-muted); }
+
+        /* --- SCENARIO BUILDER TOGGLES (NEWLY ADDED CSS) --- */
+        .sc-toggle {
+            position: relative;
             display: inline-block;
-            padding: 3px 12px;
-            border-radius: 99px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            width: 44px;
+            height: 24px;
         }
+        .sc-toggle input { opacity: 0; width: 0; height: 0; }
+        .sc-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .sc-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .sc-slider { background-color: var(--success); }
+        input:focus + .sc-slider { box-shadow: 0 0 1px var(--success); }
+        input:checked + .sc-slider:before { transform: translateX(20px); }
 
-        .badge-blue {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .badge-red {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .badge-green {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .badge-yellow {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .badge-gray {
-            background: #f1f5f9;
-            color: var(--text-muted);
-        }
 
         /* --- DATATABLES OVERRIDES --- */
         .dataTables_wrapper .dataTables_filter input {
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.875rem;
-            outline: none;
-            transition: border-color 0.2s;
-            margin-left: 8px;
+            border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-family: 'Inter', sans-serif; font-size: 0.875rem; outline: none; margin-left: 8px;
         }
-
-        .dataTables_wrapper .dataTables_filter input:focus {
-            border-color: var(--primary);
-        }
-
-        .dataTables_wrapper .dataTables_length select {
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 4px 8px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.875rem;
-            outline: none;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            padding: 4px 12px;
-            margin: 0 4px;
-            border-radius: 6px;
-            border: 1px solid transparent !important;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-            background: var(--primary) !important;
-            color: #fff !important;
-            border: 1px solid var(--primary) !important;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background: #f1f5f9 !important;
-            color: var(--text-main) !important;
-            border: 1px solid var(--border) !important;
-        }
-
-        table.dataTable.no-footer {
-            border-bottom: 1px solid var(--border);
-        }
-
-        .dataTables_info {
-            font-size: 0.875rem;
-            color: var(--text-muted) !important;
-            padding-top: 18px !important;
-        }
-
-        /* --- INSIGHT CARDS --- */
-        .insight-card {
-            display: flex;
-            gap: 14px;
-            align-items: flex-start;
-            background: var(--bg);
-            padding: 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        .insight-icon {
-            font-size: 1.4rem;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
+        .dataTables_wrapper .dataTables_filter input:focus { border-color: var(--primary); }
+        .dataTables_wrapper .dataTables_length select { border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font-family: 'Inter', sans-serif; outline: none; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button { padding: 4px 12px; margin: 0 4px; border-radius: 6px; border: 1px solid transparent !important; font-family: 'Inter', sans-serif; font-weight: 500; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current { background: var(--primary) !important; color: #fff !important; }
+        .dataTables_info { color: var(--text-muted) !important; padding-top: 18px !important; }
 
         /* --- PROGRESS BAR --- */
-        .progress-bar-wrap {
-            background: var(--bg);
-            border-radius: 99px;
-            height: 8px;
-            width: 100px;
-            display: inline-block;
-            vertical-align: middle;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            border-radius: 99px;
-            background: var(--primary);
-        }
+        .progress-bar-wrap { background: var(--bg); border-radius: 99px; height: 8px; width: 100px; display: inline-block; vertical-align: middle; overflow: hidden; }
+        .progress-bar { height: 100%; border-radius: 99px; background: var(--primary); transition: width 0.4s ease; }
 
         /* --- SPINNER & TOAST --- */
-        .spinner {
-            display: none;
-            width: 18px;
-            height: 18px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+        .spinner { display: none; width: 18px; height: 18px; border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         #toast {
             visibility: hidden;
@@ -405,355 +253,35 @@
             border-radius: 10px;
             padding: 16px 24px;
             position: fixed;
-            z-index: 999;
+            z-index: 9999;
             right: 32px;
-            bottom: 32px;
+            bottom: -50px;
             font-size: 0.9rem;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            transition: bottom 0.4s, opacity 0.4s;
+            opacity: 0;
         }
-
-        #toast.show {
-            visibility: visible;
-            animation: fadein 0.4s, fadeout 0.5s 4.5s;
-        }
-
-        @keyframes fadein {
-            from {
-                bottom: 0;
-                opacity: 0;
-            }
-
-            to {
-                bottom: 32px;
-                opacity: 1;
-            }
-        }
-
-        @keyframes fadeout {
-            from {
-                bottom: 32px;
-                opacity: 1;
-            }
-
-            to {
-                bottom: 0;
-                opacity: 0;
-            }
-        }
+        #toast.show { visibility: visible; bottom: 32px; opacity: 1; }
 
         /* --- MODAL --- */
         .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.55);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.55); z-index: 1000; align-items: flex-start;
+            justify-content: center; overflow-y: auto; padding: 40px 10px;
         }
-
-        .modal-box {
-            background: white;
-            padding: 36px;
-            max-width: 520px;
-            width: 100%;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+        .modal-box { background: white; padding: 36px; max-width: 520px; width: 100%; border-radius: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25); margin-bottom: 40px; }
+        .modal-box h2 { margin-top: 0; font-size: 1.25rem; }
+        
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 7px; font-weight: 600; font-size: 0.875rem; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border);
+            font-size: 0.9rem; font-family: 'Inter', sans-serif; transition: border-color 0.2s;
         }
-
-        .modal-box h2 {
-            margin-top: 0;
-            font-size: 1.25rem;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 7px;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            font-size: 0.9rem;
-            font-family: 'Inter', sans-serif;
-            transition: border-color 0.2s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 16px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 8px;
-        }
-
-        /* --- AI CHAT PANEL --- */
-        .ai-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .ai-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .ai-dot.online {
-            background: #10b981;
-            box-shadow: 0 0 8px #10b981;
-        }
-
-        .ai-dot.offline {
-            background: #ef4444;
-            box-shadow: 0 0 8px #ef4444;
-        }
-
-        .ai-status-text {
-            font-size: 0.78rem;
-            color: rgba(255, 255, 255, 0.85);
-        }
-
-        .chat-toggle-btn {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            width: 58px;
-            height: 58px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #2563eb, #7c3aed);
-            color: white;
-            border: none;
-            font-size: 1.6rem;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-            z-index: 900;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .chat-toggle-btn:hover {
-            transform: scale(1.08);
-            box-shadow: 0 8px 28px rgba(37, 99, 235, 0.5);
-        }
-
-        .chat-panel {
-            display: none;
-            position: fixed;
-            bottom: 100px;
-            right: 28px;
-            width: 420px;
-            max-height: 560px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18);
-            z-index: 950;
-            overflow: hidden;
-            flex-direction: column;
-            border: 1px solid var(--border);
-        }
-
-        .chat-panel.open {
-            display: flex;
-        }
-
-        .chat-header {
-            background: linear-gradient(135deg, #0f172a, #1e3a8a);
-            color: white;
-            padding: 16px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-header h3 {
-            margin: 0;
-            font-size: 0.95rem;
-        }
-
-        .chat-close {
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.3rem;
-            cursor: pointer;
-        }
-
-        .chat-close:hover {
-            color: white;
-        }
-
-        .chat-quick-prompts {
-            display: flex;
-            gap: 6px;
-            padding: 10px 16px;
-            overflow-x: auto;
-            border-bottom: 1px solid var(--border);
-            flex-shrink: 0;
-        }
-
-        .quick-prompt {
-            background: #eef2ff;
-            color: #3730a3;
-            border: 1px solid #c7d2fe;
-            padding: 5px 12px;
-            border-radius: 99px;
-            font-size: 0.72rem;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            font-family: 'Inter', sans-serif;
-            transition: background 0.2s;
-        }
-
-        .quick-prompt:hover {
-            background: #c7d2fe;
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            min-height: 280px;
-            max-height: 350px;
-        }
-
-        .chat-msg {
-            max-width: 88%;
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            line-height: 1.5;
-            word-wrap: break-word;
-        }
-
-        .chat-msg.user {
-            align-self: flex-end;
-            background: #2563eb;
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .chat-msg.ai {
-            align-self: flex-start;
-            background: #f1f5f9;
-            color: #0f172a;
-            border-bottom-left-radius: 4px;
-            border: 1px solid var(--border);
-        }
-
-        .chat-msg.ai.error {
-            background: #fef2f2;
-            border-color: #fca5a5;
-            color: #991b1b;
-        }
-
-        .chat-msg.ai.thinking {
-            background: #f8fafc;
-            color: var(--text-muted);
-            font-style: italic;
-        }
-
-        .chat-input-area {
-            display: flex;
-            gap: 8px;
-            padding: 12px 16px;
-            border-top: 1px solid var(--border);
-            background: #fafbfc;
-        }
-
-        .chat-input {
-            flex: 1;
-            padding: 10px 14px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.85rem;
-            resize: none;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .chat-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .chat-send {
-            background: var(--primary);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-
-        .chat-send:hover {
-            background: var(--primary-hover);
-        }
-
-        .chat-send:disabled {
-            background: var(--text-muted);
-            cursor: not-allowed;
-        }
-
-        .ask-ai-btn {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            transition: transform 0.15s, box-shadow 0.15s;
-        }
-
-        .ask-ai-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 10px rgba(99, 102, 241, 0.3);
-        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .form-row { display: flex; gap: 16px; }
+        .form-row .form-group { flex: 1; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
     </style>
 </head>
 
@@ -762,22 +290,26 @@
     <div class="header">
         <h1>🚌 Ramsys — Admin Control Panel</h1>
         <div style="display:flex; align-items:center; gap:16px;">
-            <div class="ai-status" id="aiStatusIndicator">
-                <span class="ai-dot offline" id="aiDot"></span>
-                <span class="ai-status-text" id="aiStatusText">AI Checking...</span>
-            </div>
             <span class="header-badge">Transport Management System</span>
         </div>
     </div>
 
-    {% if import_warning %}
-    <div
-        style="background: var(--warning); color: white; padding: 12px 32px; text-align: center; font-size: 0.9rem; font-weight: 600;">
-        ⚠️ Excel Import Successful! Routes have been wiped. Click "Run Full Optimizer" to rebuild driver schedules.
+    {% if add_status == 'error' %}
+    <div style="background: var(--danger); color: white; padding: 12px 32px; text-align: center; font-size: 0.9rem; font-weight: 600;">
+        ⚠️ Error: {{ add_message | e }}
+    </div>
+    {% elif add_status %}
+    <div style="background: var(--success); color: white; padding: 12px 32px; text-align: center; font-size: 0.9rem; font-weight: 600;">
+        ✅ Success: {{ add_message | e }}
     </div>
     {% endif %}
 
-    <!-- TAB BAR -->
+    {% if import_success|int > 0 %}
+    <div style="background: var(--success); color: white; padding: 12px 32px; text-align: center; font-size: 0.9rem; font-weight: 600;">
+        ✅ Excel Import Successful! Routes have been wiped. Click "Run Optimizer" to rebuild driver schedules.
+    </div>
+    {% endif %}
+
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab('overview', this)">📊 Overview</button>
         <button class="tab-btn" onclick="switchTab('fleet', this)">🚌 Fleet Management</button>
@@ -785,92 +317,83 @@
         <button class="tab-btn" onclick="switchTab('drivers', this)">👨‍✈️ Active Routes</button>
     </div>
 
-    <!-- ============================= OVERVIEW TAB ============================= -->
     <div id="tab-overview" class="tab-content active">
         <div class="container">
 
-            <!-- AI Insights -->
-            {% if suggestions %}
-            <div
-                style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); border: 1px solid var(--border); border-left: 5px solid var(--primary);">
-                <h2 style="margin: 0 0 16px 0; font-size: 1rem; color: var(--text-main);">🔮 AI System Insights &
-                    Suggestions</h2>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    {% for suggestion in suggestions %}
-                    <div class="insight-card">
-                        <div class="insight-icon">{{ suggestion.icon }}</div>
-                        <p style="margin: 0; font-size: 0.875rem; line-height: 1.6; color: var(--text-main);">{{
-                            suggestion.message }}</p>
+            <div style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); border: 1px solid var(--border); border-left: 5px solid {% if unassigned_count == 0 and routes %}#10b981{% elif routes %}#f59e0b{% else %}#ef4444{% endif %};">
+                <h2 style="margin: 0 0 16px 0; font-size: 1rem; color: var(--text-main);">📋 System Status</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                    <div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Students</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">{{ students_count }}</div>
                     </div>
-                    {% endfor %}
+                    <div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Families</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">{{ total_families }}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Active Buses</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">{{ active_buses_count }}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Last Optimized</div>
+                        <div style="font-size: 1rem; font-weight: 600; color: var(--text-main);">{{ last_opt_time }}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Fleet Utilization</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: {% if fleet_utilization > 95 %}var(--danger){% elif fleet_utilization > 80 %}var(--warning){% else %}var(--success){% endif %};">{{ fleet_utilization }}%</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Empty Seats</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">{{ empty_seats }}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Assignment Status</div>
+                        {% if unassigned_count == 0 and routes %}
+                        <span class="badge badge-green">✅ All students assigned</span>
+                        {% elif routes %}
+                        <span class="badge badge-yellow">⚠️ {{ unassigned_count }} unassigned</span>
+                        {% else %}
+                        <span class="badge badge-red">🚨 No routes — run optimizer</span>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-            {% endif %}
 
-            <!-- Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <p class="stat-title">Total Enrolled</p>
-                    <p class="stat-value">{{ students_count }}</p>
-                </div>
-                <div class="stat-card">
-                    <p class="stat-title">Families Served</p>
-                    <p class="stat-value">{{ total_families }}</p>
-                </div>
-                <div class="stat-card">
-                    <p class="stat-title">Active Fleet</p>
-                    <p class="stat-value">{{ active_buses_count }}</p>
-                </div>
-                <div class="stat-card">
-                    <p class="stat-title">Last Optimized</p>
-                    <p class="stat-value" style="font-size: 1rem; color: var(--text-main); margin-top: 6px;">{{
-                        last_opt_time }}</p>
-                </div>
-            </div>
-
-            <!-- Optimizer -->
             <div class="control-panel">
                 <div class="control-info">
                     <h2>⚙️ Route Optimization Engine</h2>
-                    <p>Fetch fresh traffic data from HERE Maps and recalculate all bus sequences (~30 seconds).</p>
+                    <p>Fetch fresh traffic data from HERE Maps and recalculate all bus sequences based on live traffic.</p>
                 </div>
                 <div style="display:flex; gap:10px;">
                     <button id="optimizeBtn" class="btn" onclick="triggerOptimization()">
                         <span>▶ Run Optimizer</span>
                         <div id="spinner" class="spinner"></div>
                     </button>
-                    <button class="btn" style="background:#6366f1;" onclick="openScenarioBuilder()">⚙️ Scenario
-                        Settings</button>
+                    <button class="btn" style="background:#6366f1;" onclick="openScenarioBuilder()">⚙️ Scenario Settings</button>
                 </div>
             </div>
 
-            <!-- Excel sync -->
             <div class="control-panel" style="gap:24px;">
                 <div class="control-info">
                     <h2>📊 Excel Data Sync</h2>
-                    <p>Export current student roster to Excel, make offline edits, then re-import to update the
-                        database.</p>
+                    <p>Export current student roster to Excel, make offline edits, then re-import to update the database.</p>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <a href="/api/export-students" class="btn"
-                        style="background: var(--bg); color: var(--text-main); border: 1px solid var(--border);">↓
-                        Export Excel</a>
-                    <button class="btn" style="background: var(--text-main);"
-                        onclick="openModal('importStudentModal')">↑ Import Excel</button>
+                    <a href="/api/export-students" class="btn" style="background: var(--bg); color: var(--text-main); border: 1px solid var(--border);">↓ Export Excel</a>
+                    <button class="btn" style="background: var(--text-main);" onclick="openModal('importStudentModal')">↑ Import Excel</button>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <!-- ============================= FLEET TAB ============================= -->
     <div id="tab-fleet" class="tab-content">
         <div class="container">
             <div class="table-card">
                 <div class="table-card-header">
                     <h2>🚌 Bus Fleet Database</h2>
-                    <button class="btn" style="background: var(--success);" onclick="openModal('addBusModal')">+
-                        Register New Bus</button>
+                    <button class="btn" style="background: var(--success);" onclick="openModal('addBusModal')">+ Register New Bus</button>
                 </div>
                 <table>
                     <thead>
@@ -880,39 +403,25 @@
                             <th>Bus Type</th>
                             <th>Students / Capacity</th>
                             <th>Load %</th>
-                            <th>Route Duration</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for bus in all_buses %}
-                        {% set load_pct = ((bus.students_assigned / bus.capacity * 100) | round(0) | int) if
-                        bus.capacity and bus.students_assigned else 0 %}
+                        {% set load_pct = ((bus.students_assigned / bus.capacity * 100) | round(0) | int) if bus.capacity and bus.students_assigned else 0 %}
                         <tr>
                             <td style="font-weight:700;">Bus {{ bus.id }}</td>
-                            <td>{{ bus.driver_name }}</td>
+                            <td>{{ bus.driver_name | e }}</td>
                             <td><span class="badge badge-gray">{{ bus.bus_type }}</span></td>
-                            <td>
-                                <strong>{{ bus.students_assigned or 0 }}</strong> / {{ bus.capacity }}
-                            </td>
+                            <td><strong>{{ bus.students_assigned or 0 }}</strong> / {{ bus.capacity }}</td>
                             <td>
                                 <div style="display:flex; align-items:center; gap:8px;">
                                     <div class="progress-bar-wrap">
-                                        <div class="progress-bar"
-                                            style="width: {{ load_pct }}%; background: {% if load_pct >= 90 %}var(--danger){% elif load_pct >= 60 %}var(--warning){% else %}var(--success){% endif %};">
-                                        </div>
+                                        <div class="progress-bar" style="width: {{ load_pct }}%; background: {% if load_pct >= 90 %}var(--danger){% elif load_pct >= 60 %}var(--warning){% else %}var(--success){% endif %};"></div>
                                     </div>
-                                    <span style="font-size:0.8rem; font-weight:600; color: var(--text-muted);">{{
-                                        load_pct }}%</span>
+                                    <span style="font-size:0.8rem; font-weight:600; color: var(--text-muted);">{{ load_pct }}%</span>
                                 </div>
-                            </td>
-                            <td>
-                                {% if bus.duration and bus.duration != 'N/A' %}
-                                <span class="badge badge-blue">{{ bus.duration }}</span>
-                                {% else %}
-                                <span style="color:var(--text-muted);">No route</span>
-                                {% endif %}
                             </td>
                             <td>
                                 {% if bus.is_active and bus.students_assigned %}
@@ -926,22 +435,17 @@
                             <td>
                                 <div style="display:flex; gap:8px;">
                                     {% if bus.students_assigned %}
-                                    <a href="/driver/{{ bus.id }}?from=admin" target="_blank" class="btn"
-                                        style="padding: 5px 12px; font-size: 0.8rem; background: var(--primary);">View
-                                        Route</a>
+                                    <a href="/driver/{{ bus.id }}?from=admin" target="_blank" class="btn" style="padding: 5px 12px; font-size: 0.8rem; background: var(--primary);">View Route</a>
                                     {% endif %}
-                                    <form action="/api/delete-bus/{{ bus.id }}" method="POST" style="display:inline;"
-                                        onsubmit="return confirm('Retire Bus {{ bus.id }}? This will remove it from the routing pool.');">
-                                        <button type="submit" class="btn"
-                                            style="padding: 5px 12px; font-size: 0.8rem; background: var(--danger);">Retire</button>
+                                    <form action="/api/delete-bus/{{ bus.id }}" method="POST" style="display:inline;" onsubmit="return confirm('Retire Bus {{ bus.id }}? This will remove it from the routing pool.');">
+                                        <button type="submit" class="btn" style="padding: 5px 12px; font-size: 0.8rem; background: var(--danger);">Retire</button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="8" style="text-align:center; padding:40px; color:var(--text-muted);">No buses
-                                found in fleet.</td>
+                            <td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted);">No buses found in fleet.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -950,80 +454,68 @@
         </div>
     </div>
 
-    <!-- ============================= STUDENTS TAB ============================= -->
     <div id="tab-students" class="tab-content">
         <div class="container">
             <div class="table-card">
                 <div class="table-card-header">
                     <h2>👦 Student Management</h2>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn" style="background: var(--success);" onclick="openModal('addStudentModal')">+
-                            Register Student</button>
-                    </div>
+                    <button class="btn" style="background: var(--success);" onclick="openModal('addStudentModal')">+ Register Student</button>
                 </div>
-                <!-- DataTables dynamically controls exactly how this is rendered, adding premium UX -->
-                <table id="studentsDataTable" class="display responsive nowrap" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>First Name</th>
-                            <th>Family Name</th>
-                            <th>Address</th>
-                            <th>Cycle</th>
-                            <th>Assigned Bus</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for student in all_students %}
-                        <tr>
-                            <td style="color:var(--text-muted);">{{ student.id }}</td>
-                            <td style="font-weight:600;">{{ student.first_name }}</td>
-                            <td>{{ student.last_name }}</td>
-                            <td style="color:var(--text-muted); font-size:0.85rem;">{{ student.address or '—' }}</td>
-                            <td style="color:var(--text-muted); font-size:0.85rem;">{{ student.cycle or '—' }}</td>
-                            <td>
-                                {% if student.bus_id %}
-                                <span class="badge badge-blue">Bus {{ student.bus_id }}</span>
-                                {% else %}
-                                <span class="badge badge-yellow">Unassigned</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <form action="/api/delete-student/{{ student.id }}" method="POST"
-                                    style="display:inline;"
-                                    onsubmit="return confirm('Unenroll {{ student.first_name }} {{ student.last_name }}?');">
-                                    <button type="submit" class="btn"
-                                        style="padding: 5px 12px; font-size: 0.8rem; background: var(--danger);">Unenroll</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">No
-                                students found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div style="padding: 20px;">
+                    <table id="studentsDataTable" class="display responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Family Name</th>
+                                <th>Address</th>
+                                <th>Cycle</th>
+                                <th>Assigned Bus</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in all_students %}
+                            <tr>
+                                <td style="color:var(--text-muted);">{{ student.id }}</td>
+                                <td style="font-weight:600;">{{ student.first_name | e }}</td>
+                                <td>{{ student.last_name | e }}</td>
+                                <td style="color:var(--text-muted); font-size:0.85rem;">{{ student.address | e or '—' }}</td>
+                                <td style="color:var(--text-muted); font-size:0.85rem;">{{ student.cycle | e or '—' }}</td>
+                                <td>
+                                    {% if student.bus_id %}
+                                    <span class="badge badge-blue">Bus {{ student.bus_id }}</span>
+                                    {% else %}
+                                    <span class="badge badge-yellow">Unassigned</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <form action="/api/delete-student/{{ student.id }}" method="POST" style="display:inline;" onsubmit="return confirm('Unenroll {{ student.first_name | e }} {{ student.last_name | e }}?');">
+                                        <button type="submit" class="btn" style="padding: 5px 12px; font-size: 0.8rem; background: var(--danger);">Unenroll</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- ============================= ACTIVE ROUTES TAB ============================= -->
     <div id="tab-drivers" class="tab-content">
         <div class="container">
             <div class="table-card">
                 <div class="table-card-header">
                     <h2>👨‍✈️ Today's Active Routes</h2>
-                    <span style="font-size:0.875rem; color:var(--text-muted);">Last optimized: {{ last_opt_time
-                        }}</span>
+                    <span style="font-size:0.875rem; color:var(--text-muted);">Last optimized: {{ last_opt_time }}</span>
                 </div>
                 <table>
                     <thead>
                         <tr>
                             <th>Bus</th>
                             <th>Driver</th>
+                            <th>Session</th>
                             <th>Total Stops</th>
                             <th>Students</th>
                             <th>Capacity</th>
@@ -1033,31 +525,26 @@
                     </thead>
                     <tbody>
                         {% for route in routes %}
-                        {% set load_pct = ((route.students_assigned / route.capacity * 100) | round(0) | int) if
-                        route.capacity and route.students_assigned else 0 %}
+                        {% set load_pct = ((route.students_assigned / route.capacity * 100) | round(0) | int) if route.capacity and route.students_assigned else 0 %}
                         <tr>
                             <td style="font-weight:700;">Bus {{ route.bus_id }}</td>
-                            <td>{{ route.driver_name }}</td>
+                            <td>{{ route.driver_name | e }}</td>
+                            <td><span class="badge {% if route.session == 'morning' %}badge-blue{% else %}badge-yellow{% endif %}">{{ route.session | capitalize }}</span></td>
                             <td>{{ route.stops_count }}</td>
                             <td>{{ route.students_assigned }}</td>
                             <td>
-                                <span
-                                    class="badge {% if load_pct >= 90 %}badge-red{% elif load_pct >= 60 %}badge-yellow{% else %}badge-green{% endif %}">
+                                <span class="badge {% if load_pct >= 90 %}badge-red{% elif load_pct >= 60 %}badge-yellow{% else %}badge-green{% endif %}">
                                     {{ route.students_assigned }} / {{ route.capacity }}
                                 </span>
                             </td>
                             <td>{{ route.finish_time }}</td>
                             <td>
-                                <a href="/driver/{{ route.bus_id }}?from=admin" target="_blank" class="btn"
-                                    style="padding: 5px 14px; font-size: 0.8rem; background: var(--success);">View
-                                    Driver UI</a>
+                                <a href="/driver/{{ route.bus_id }}?from=admin" target="_blank" class="btn" style="padding: 5px 14px; font-size: 0.8rem; background: var(--success);">View Map & Details</a>
                             </td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted);">
-                                No active routes found. Run the optimizer to generate routes.
-                            </td>
+                            <td colspan="8" style="text-align:center; padding:40px; color:var(--text-muted);">No active routes found. Run the optimizer to generate routes.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -1066,14 +553,10 @@
         </div>
     </div>
 
-    <!-- =================== MODALS =================== -->
-
-    <!-- Add Bus Modal -->
     <div id="addBusModal" class="modal-overlay">
         <div class="modal-box">
             <h2>🚌 Register New Bus</h2>
-            <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:24px;">Add a new vehicle to the
-                optimization pool. It will receive students the next time you run the optimizer.</p>
+            <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:24px;">Add a new vehicle to the optimization pool.</p>
             <form action="/api/add-bus" method="POST">
                 <div class="form-group">
                     <label>Driver Name</label>
@@ -1095,21 +578,17 @@
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn"
-                        style="background:transparent; color:var(--text-main); border:1px solid var(--border);"
-                        onclick="closeModal('addBusModal')">Cancel</button>
+                    <button type="button" class="btn" style="background:transparent; color:var(--text-main); border:1px solid var(--border);" onclick="closeModal('addBusModal')">Cancel</button>
                     <button type="submit" class="btn">+ Add Bus to Fleet</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Add Student Modal -->
     <div id="addStudentModal" class="modal-overlay">
         <div class="modal-box">
             <h2>👦 Enrol New Student</h2>
-            <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:24px;">The system will automatically
-                detect siblings and group them into the same family stop.</p>
+            <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:24px;">The system will automatically detect siblings and group them into the same family stop.</p>
             <form action="/api/add-student" method="POST">
                 <div class="form-row">
                     <div class="form-group">
@@ -1134,13 +613,17 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Address</label>
-                        <input type="text" name="address" placeholder="e.g. 12 Rue de la Liberté, Constantine"
-                            value="Constantine, Algeria" required>
+                        <input type="text" name="address" placeholder="e.g. 12 Rue de la Liberté" value="Constantine, Algeria" required>
                     </div>
                     <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="phone" placeholder="e.g. 0555-123-456" value="0555-000-000">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
                         <label>Cycle</label>
-                        <select name="cycle" required
-                            style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: 'Inter', sans-serif;">
+                        <select name="cycle" required>
                             <option value="Kindergarten">Kindergarten</option>
                             <option value="Primary" selected>Primary</option>
                             <option value="Middle">Middle</option>
@@ -1149,159 +632,96 @@
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn"
-                        style="background:transparent; color:var(--text-main); border:1px solid var(--border);"
-                        onclick="closeModal('addStudentModal')">Cancel</button>
+                    <button type="button" class="btn" style="background:transparent; color:var(--text-main); border:1px solid var(--border);" onclick="closeModal('addStudentModal')">Cancel</button>
                     <button type="submit" class="btn" style="background:var(--success);">+ Enrol Student</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Import Excel Modal -->
     <div id="importStudentModal" class="modal-overlay">
         <div class="modal-box">
             <h2>📂 Import Excel File</h2>
-            <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:24px;">Upload a modified
-                <code>.xlsx</code> file. <strong>Warning:</strong> This will overwrite all current student data and
-                erase all routes. You must re-run the optimizer afterward.</p>
+            <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:24px;">Upload a modified <code>.xlsx</code> file. <strong>Warning:</strong> This will overwrite all current student data and erase all routes.</p>
             <form action="/api/import-students" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <input type="file" name="excel_file" accept=".xlsx" required style="padding:10px;">
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn"
-                        style="background:transparent; color:var(--text-main); border:1px solid var(--border);"
-                        onclick="closeModal('importStudentModal')">Cancel</button>
+                    <button type="button" class="btn" style="background:transparent; color:var(--text-main); border:1px solid var(--border);" onclick="closeModal('importStudentModal')">Cancel</button>
                     <button type="submit" class="btn" style="background:var(--danger);">Upload & Sync Database</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- ============================= SCENARIO BUILDER MODAL ============================= -->
     <div id="scenarioModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 640px;">
             <h2>⚙️ Scenario Builder</h2>
-            <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:24px;">Configure optimization
-                constraints. Changes are saved to the database and applied on the next optimizer run.</p>
+            <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:24px;">Configure optimization constraints. Changes are applied on the next optimizer run.</p>
 
-            <div
-                style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-muted); margin-bottom:12px;">
-                🎓 Cycle Constraints</div>
+            <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-muted); margin-bottom:12px;">🎓 Cycle Constraints</div>
 
             <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">
-                <div
-                    style="display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px 18px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px 18px;">
                     <div>
                         <div style="font-weight:600;">Enforce KP / MH Cycle Separation</div>
-                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:3px;">Kindergarten &amp;
-                            Primary ride separately from Middle &amp; High School</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:3px;">Kindergarten &amp; Primary ride separately from Middle &amp; High School</div>
                     </div>
-                    <label class="sc-toggle"><input type="checkbox" id="sc_cycle_sep" checked
-                            onchange="scheduleEstimate()"><span class="sc-slider"></span></label>
+                    <label class="sc-toggle"><input type="checkbox" id="sc_cycle_sep" checked onchange="scheduleEstimate()"><span class="sc-slider"></span></label>
                 </div>
-                <div
-                    style="display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px 18px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px 18px;">
                     <div>
-                        <div style="font-weight:600;">Allow Sibling Override <span
-                                style="color:var(--success);">(Recommended)</span></div>
-                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:3px;">If a family has kids in
-                            <em>both</em> KP and MH (e.g., one in Primary + one in High School), they share the same bus
-                            as an exception to the separation rule</div>
+                        <div style="font-weight:600;">Allow Sibling Override <span style="color:var(--success);">(Recommended)</span></div>
+                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:3px;">If a family has kids in <em>both</em> cycles, they share the same bus.</div>
                     </div>
-                    <label class="sc-toggle"><input type="checkbox" id="sc_sib" checked
-                            onchange="scheduleEstimate()"><span class="sc-slider"></span></label>
+                    <label class="sc-toggle"><input type="checkbox" id="sc_sib" checked onchange="scheduleEstimate()"><span class="sc-slider"></span></label>
                 </div>
             </div>
 
-            <div
-                style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-muted); margin-bottom:12px;">
-                🚌 Route Constraints</div>
+            <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-muted); margin-bottom:12px;">🚌 Route Constraints</div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:28px;">
                 <div class="form-group">
                     <label>Max Stops Per Bus: <strong id="sc_stops_disp">20</strong></label>
-                    <input type="range" id="sc_max_stops" min="5" max="40" step="1" value="20"
-                        oninput="document.getElementById('sc_stops_disp').textContent=this.value; scheduleEstimate();"
-                        style="width:100%; accent-color:var(--primary);">
+                    <input type="range" id="sc_max_stops" min="5" max="40" step="1" value="20" oninput="document.getElementById('sc_stops_disp').textContent=this.value; scheduleEstimate();" style="width:100%; accent-color:var(--primary);">
                 </div>
                 <div class="form-group">
-                    <label>Max Route Duration: <strong id="sc_mins_disp">180 mins</strong></label>
-                    <input type="range" id="sc_max_mins" min="60" max="300" step="15" value="180"
-                        oninput="document.getElementById('sc_mins_disp').textContent=this.value+' mins';"
-                        style="width:100%; accent-color:var(--primary);">
+                    <label>Max Route Duration: <strong id="sc_mins_disp">75 mins</strong></label>
+                    <input type="range" id="sc_max_mins" min="45" max="75" step="5" value="75" oninput="document.getElementById('sc_mins_disp').textContent=this.value+' mins'; scheduleEstimate();" style="width:100%; accent-color:var(--primary);">
                 </div>
                 <div class="form-group">
                     <label>Solver Time Limit: <strong id="sc_time_disp">45s</strong></label>
-                    <input type="range" id="sc_solver_t" min="15" max="120" step="5" value="45"
-                        oninput="document.getElementById('sc_time_disp').textContent=this.value+'s';"
-                        style="width:100%; accent-color:var(--primary);">
+                    <input type="range" id="sc_solver_t" min="15" max="120" step="5" value="45" oninput="document.getElementById('sc_time_disp').textContent=this.value+'s'; scheduleEstimate();" style="width:100%; accent-color:var(--primary);">
                 </div>
                 <div class="form-group">
                     <label>Min Bus Utilization: <strong id="sc_util_disp">60%</strong></label>
-                    <input type="range" id="sc_min_util" min="20" max="100" step="5" value="60"
-                        oninput="document.getElementById('sc_util_disp').textContent=this.value+'%'; scheduleEstimate();"
-                        style="width:100%; accent-color:var(--primary);">
+                    <input type="range" id="sc_min_util" min="20" max="100" step="5" value="60" oninput="document.getElementById('sc_util_disp').textContent=this.value+'%'; scheduleEstimate();" style="width:100%; accent-color:var(--primary);">
                 </div>
             </div>
 
-            <!-- ===== FLEET RECOMMENDATION CARD ===== -->
-            <div
-                style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-muted); margin:20px 0 10px;">
-                📊 Fleet Recommendation <span style="font-weight:400; font-style:italic; text-transform:none;">— updates
-                    automatically as you change settings</span></div>
-            <div id="sc_estimate_box"
-                style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:18px; min-height:60px; position:relative;">
-                <div id="sc_estimate_loading" style="text-align:center; color:var(--text-muted); font-size:0.875rem;">
-                    Adjust a setting above to see your fleet recommendation</div>
+            <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-muted); margin:20px 0 10px;">📊 Fleet Recommendation</div>
+            <div id="sc_estimate_box" style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:18px; min-height:60px; position:relative;">
+                <div id="sc_estimate_loading" style="text-align:center; color:var(--text-muted); font-size:0.875rem;">Adjust a setting above to see your fleet recommendation</div>
                 <div id="sc_estimate_content" style="display:none;">
-                    <div id="sc_estimate_summary" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
-                    </div>
+                    <div id="sc_estimate_summary" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px;"></div>
                     <div id="sc_estimate_groups" style="display:flex; flex-direction:column; gap:8px;"></div>
                 </div>
             </div>
 
             <div class="modal-actions" style="margin-top:20px;">
-                <button type="button" class="btn"
-                    style="background:transparent; color:var(--text-main); border:1px solid var(--border);"
-                    onclick="closeModal('scenarioModal')">Cancel</button>
-                <button type="button" class="btn" style="background:#6366f1;" onclick="saveScenario(false)">💾 Save
-                    Scenario</button>
-                <button type="button" class="btn" style="background:var(--success);" onclick="saveScenario(true)">▶ Save
-                    &amp; Run Optimizer</button>
+                <button type="button" class="btn" style="background:transparent; color:var(--text-main); border:1px solid var(--border);" onclick="closeModal('scenarioModal')">Cancel</button>
+                <button type="button" class="btn" style="background:#6366f1;" onclick="saveScenario(false)">💾 Save Scenario</button>
+                <button type="button" class="btn" style="background:var(--success);" onclick="saveScenario(true)">▶ Save &amp; Run Optimizer</button>
             </div>
         </div>
     </div>
 
-    <div id="toast">✅ Optimization initiated. Check the server terminal for logs.</div>
+    <div id="toast">✅ Notification Text Here</div>
 
-    <!-- AI CHAT PANEL -->
-    <button class="chat-toggle-btn" id="chatToggle" onclick="toggleChat()" title="AI Assistant">🤖</button>
-
-    <div class="chat-panel" id="chatPanel">
-        <div class="chat-header">
-            <h3>🤖 Ramsys AI Assistant</h3>
-            <button class="chat-close" onclick="toggleChat()">✕</button>
-        </div>
-        <div class="chat-quick-prompts">
-            <button class="quick-prompt" onclick="sendQuick('Analyze fleet efficiency and suggest improvements')">📊
-                Fleet Analysis</button>
-            <button class="quick-prompt" onclick="sendQuick('Which buses should I retire to save costs?')">💰 Cost
-                Savings</button>
-            <button class="quick-prompt"
-                onclick="sendQuick('Are there any overloaded or long routes I should split?')">⚠️ Route Issues</button>
-        </div>
-        <div class="chat-messages" id="chatMessages">
-            <div class="chat-msg ai">Hello! I'm your Ramsys AI assistant. I can analyze your fleet, suggest
-                optimizations, and answer questions about your routes. What would you like to know?</div>
-        </div>
-        <div class="chat-input-area">
-            <input type="text" class="chat-input" id="chatInput" placeholder="Ask about your fleet..."
-                onkeydown="if(event.key==='Enter')sendChat()">
-            <button class="chat-send" id="chatSendBtn" onclick="sendChat()">➤</button>
-        </div>
-    </div>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
     <script>
         // ---- Tab Switching ----
@@ -1312,175 +732,113 @@
             btn.classList.add('active');
         }
 
-        // ---- Modal ----
+        // ---- Modal Controls ----
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // Close modals on overlay click
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', function (e) {
                 if (e.target === this) closeModal(this.id);
             });
         });
 
-        // ---- Optimizer ----
+        // ---- Toast Notifications ----
+        function showToast(message, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = message;
+            t.style.background = type === 'error' ? 'var(--danger)' : '#1e293b';
+            t.classList.add('show');
+            setTimeout(() => { t.classList.remove('show'); }, 5000);
+        }
+
+        // ---- REAL-TIME OPTIMIZER POLLING (CRITICAL FIX) ----
+        let _pollInterval = null;
+
+        function pollOptimizationStatus() {
+            const btnText = document.querySelector('#optimizeBtn span');
+            
+            _pollInterval = setInterval(() => {
+                fetch('/api/optimization-status')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.running) {
+                            // Backend is working, update the button with what it's doing
+                            btnText.innerText = data.message || 'Optimizing...';
+                        } else {
+                            // Finished!
+                            clearInterval(_pollInterval);
+                            document.getElementById('spinner').style.display = 'none';
+                            
+                            if (data.last_result === 'failed') {
+                                btnText.innerText = 'Run Optimizer';
+                                document.getElementById('optimizeBtn').disabled = false;
+                                showToast('❌ ' + data.message, 'error');
+                            } else {
+                                btnText.innerText = '✅ Finished! Refreshing...';
+                                showToast('✅ Routing complete. Refreshing dashboard...', 'success');
+                                setTimeout(() => window.location.reload(), 1500);
+                            }
+                        }
+                    })
+                    .catch(() => {
+                        clearInterval(_pollInterval);
+                        btnText.innerText = 'Run Optimizer';
+                        document.getElementById('spinner').style.display = 'none';
+                        document.getElementById('optimizeBtn').disabled = false;
+                        showToast('❌ Lost connection to server.', 'error');
+                    });
+            }, 2000); // Check status every 2 seconds
+        }
+
         function triggerOptimization() {
             const btn = document.getElementById('optimizeBtn');
             const spinner = document.getElementById('spinner');
             const btnText = btn.querySelector('span');
 
             btn.disabled = true;
-            btnText.innerText = 'Calculating (≈30s)...';
+            btnText.innerText = 'Starting Optimizer...';
             spinner.style.display = 'inline-block';
 
             fetch('/api/trigger-optimization', { method: 'POST' })
                 .then(res => res.json())
-                .then(() => {
-                    showToast();
-                    setTimeout(() => {
-                        btnText.innerText = 'Refresh to see results';
-                        spinner.style.display = 'none';
-                        btn.onclick = () => window.location.reload();
-                        btn.disabled = false;
-                    }, 12000);
+                .then(data => {
+                    if (data.status === 'already_running') {
+                        showToast('⚠️ ' + data.message, 'error');
+                        pollOptimizationStatus(); // Resume polling if we lost it
+                    } else {
+                        showToast('✅ Engine started. Polling status...', 'success');
+                        pollOptimizationStatus();
+                    }
                 })
                 .catch(() => {
                     btn.disabled = false;
-                    btnText.innerText = 'Run Full Optimizer';
+                    btnText.innerText = 'Run Optimizer';
                     spinner.style.display = 'none';
-                    alert('Failed to contact the optimization server.');
+                    showToast('❌ Failed to trigger optimization.', 'error');
                 });
         }
 
-        function showToast() {
-            const x = document.getElementById('toast');
-            x.className = 'show';
-            setTimeout(() => { x.className = x.className.replace('show', ''); }, 5000);
-        }
-
-        // ---- AI CHAT ----
-        let chatOpen = false;
-
-        function toggleChat() {
-            chatOpen = !chatOpen;
-            document.getElementById('chatPanel').classList.toggle('open', chatOpen);
-            if (chatOpen) document.getElementById('chatInput').focus();
-        }
-
-        function addMessage(text, type) {
-            const container = document.getElementById('chatMessages');
-            const msg = document.createElement('div');
-            msg.className = 'chat-msg ' + type;
-            msg.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>');
-            container.appendChild(msg);
-            container.scrollTop = container.scrollHeight;
-            return msg;
-        }
-
-        function sendChat() {
-            const input = document.getElementById('chatInput');
-            const msg = input.value.trim();
-            if (!msg) return;
-
-            addMessage(msg, 'user');
-            input.value = '';
-
-            const sendBtn = document.getElementById('chatSendBtn');
-            sendBtn.disabled = true;
-
-            const thinking = addMessage('Thinking...', 'ai thinking');
-
-            fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: msg })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    thinking.remove();
-                    if (data.error === 'AI_OFFLINE') {
-                        addMessage(data.response, 'ai error');
-                    } else {
-                        addMessage(data.response, 'ai');
-                    }
-                    sendBtn.disabled = false;
-                })
-                .catch(err => {
-                    thinking.remove();
-                    addMessage('⚠️ Could not reach the server. Is Flask running?', 'ai error');
-                    sendBtn.disabled = false;
-                });
-        }
-
-        function sendQuick(text) {
-            document.getElementById('chatInput').value = text;
-            if (!chatOpen) toggleChat();
-            sendChat();
-        }
-
-        // Per-bus AI analysis
-        function askAiBus(busId, driverName, students, capacity) {
-            const msg = `Analyze Bus ${busId} (Driver ${driverName}). It currently carries ${students}/${capacity} students. Is this efficient? Should I make any changes?`;
-            document.getElementById('chatInput').value = msg;
-            if (!chatOpen) toggleChat();
-            sendChat();
-        }
-
-        // ---- AI STATUS POLLING ----
-        function checkAiStatus() {
-            fetch('/api/ai-status')
-                .then(res => res.json())
-                .then(data => {
-                    const dot = document.getElementById('aiDot');
-                    const text = document.getElementById('aiStatusText');
-                    if (data.online) {
-                        dot.className = 'ai-dot online';
-                        text.textContent = 'AI Online';
-                    } else {
-                        dot.className = 'ai-dot offline';
-                        text.textContent = 'AI Offline';
-                    }
-                })
-                .catch(() => {
-                    document.getElementById('aiDot').className = 'ai-dot offline';
-                    document.getElementById('aiStatusText').textContent = 'AI Offline';
-                });
-        }
-
-        // Check AI status on load and every 30 seconds
-        checkAiStatus();
-        setInterval(checkAiStatus, 30000);
-    </script>
-
-    <!-- jQuery and DataTables Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-
-    <script>
-        // Initialize DataTables when the document is ready
+        // ---- DataTables Initialization ----
         $(document).ready(function () {
             $('#studentsDataTable').DataTable({
-                "pageLength": 15, // Show 15 students per page to keep the view clean
+                "pageLength": 15,
                 "lengthMenu": [[15, 50, 100, -1], [15, 50, 100, "All"]],
                 "language": {
                     "search": "🔍 Search Students:",
                     "lengthMenu": "Display _MENU_ records per page",
                     "info": "Showing _START_ to _END_ of _TOTAL_ students",
-                    "infoEmpty": "No student records available",
-                    "infoFiltered": "(filtered from _MAX_ total students)"
+                    "emptyTable": "No students found. Use 'Register Student' or 'Import Excel'."
                 },
-                "order": [[0, "desc"]], // Sort by ID descending (newest first)
-                "columnDefs": [
-                    { "orderable": false, "targets": 6 } // Disable sorting on the Actions column
-                ],
+                "order": [[0, "desc"]],
+                "columnDefs": [{ "orderable": false, "targets": 6 }],
                 "responsive": true
             });
 
-            // Re-adjust columns if the tab is clicked (fixes header misalignment in hidden tabs)
+            // Fix header misalignment when switching to Students tab
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', function () {
-                    if (this.getAttribute('onclick') === "switchTab('tab-students')") {
+                    const onclick = this.getAttribute('onclick') || '';
+                    if (onclick.includes("'students'")) {
                         setTimeout(() => {
                             $('#studentsDataTable').DataTable().columns.adjust().responsive.recalc();
                         }, 50);
@@ -1488,21 +846,19 @@
                 });
             });
         });
-    </script>
 
-    <script>
-        // ========= SCENARIO BUILDER =========
+        // ---- Scenario Builder logic ----
         let _estimateTimer = null;
-
         function scheduleEstimate() {
             clearTimeout(_estimateTimer);
-            _estimateTimer = setTimeout(computeEstimate, 400); // debounce 400ms
+            _estimateTimer = setTimeout(computeEstimate, 400);
         }
 
         function computeEstimate() {
             const fd = new FormData();
             fd.append('cycle_separation', document.getElementById('sc_cycle_sep').checked ? 'true' : 'false');
             fd.append('max_stops_per_bus', document.getElementById('sc_max_stops').value);
+            fd.append('max_route_minutes', document.getElementById('sc_max_mins').value);
             fd.append('min_bus_utilization_pct', document.getElementById('sc_min_util').value);
 
             fetch('/api/scenario-estimate', { method: 'POST', body: fd })
@@ -1511,9 +867,7 @@
                     document.getElementById('sc_estimate_loading').style.display = 'none';
                     document.getElementById('sc_estimate_content').style.display = 'block';
 
-                    // Summary badges
                     const s = data.summary;
-                    const colors = { total: '#6366f1', mini: '#f59e0b', std: '#10b981' };
                     document.getElementById('sc_estimate_summary').innerHTML = `
                   <div style="background:#6366f11a; border:1px solid #6366f1; border-radius:8px; padding:10px 16px; text-align:center;">
                     <div style="font-size:1.75rem; font-weight:800; color:#6366f1;">${s.total_buses}</div>
@@ -1529,7 +883,6 @@
                   </div>
                 `;
 
-                    // Per-group detail
                     const groupColors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444'];
                     const groupsHtml = data.groups
                         .filter(g => g.students > 0)
@@ -1552,17 +905,15 @@
                     document.getElementById('sc_estimate_groups').innerHTML = groupsHtml;
                 })
                 .catch(() => {
-                    document.getElementById('sc_estimate_loading').textContent = '⚠️ Could not load estimate. Make sure students are in the database.';
+                    document.getElementById('sc_estimate_loading').textContent = '⚠️ Could not load estimate. Ensure students are enrolled.';
                 });
         }
 
         function openScenarioBuilder() {
-            // Reset estimate panel
             document.getElementById('sc_estimate_loading').style.display = 'block';
-            document.getElementById('sc_estimate_loading').textContent = 'Adjust a setting above to see your fleet recommendation';
+            document.getElementById('sc_estimate_loading').textContent = 'Loading current settings...';
             document.getElementById('sc_estimate_content').style.display = 'none';
 
-            // Load current saved values from the backend
             fetch('/api/get-scenario')
                 .then(r => r.json())
                 .then(cfg => {
@@ -1581,7 +932,6 @@
                     document.getElementById('sc_min_util').value = util;
                     document.getElementById('sc_util_disp').textContent = util + '%';
 
-                    // Show initial estimate
                     computeEstimate();
                 })
                 .catch(() => { openModal('scenarioModal'); });
@@ -1604,10 +954,7 @@
                     if (andRun) {
                         triggerOptimization();
                     } else {
-                        const t = document.getElementById('toast');
-                        t.textContent = '⚙️ Scenario saved! Run the optimizer to apply changes.';
-                        t.classList.add('show');
-                        setTimeout(() => t.classList.remove('show'), 3500);
+                        showToast('⚙️ Scenario saved! Run the optimizer to apply changes.', 'success');
                     }
                 });
         }

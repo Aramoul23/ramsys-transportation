@@ -3,31 +3,25 @@ Ramsys School Bus Routing System — New Student Insertion Workflow
 =================================================================
 Handles mid-year student additions without running the full optimizer.
 
-Priority order:
-  1. Sibling match  -> auto-assign to sibling's bus (if capacity exists)
-  2. Nearby stop    -> auto-insert next to the nearest compatible stop within 500m
-  3. No match       -> save to DB, flag for next optimizer run
-
-Improvements vs previous version:
-  1. Single try/finally wraps the entire function — no connection leak on any
-     exception path (was 6 scattered conn.close() calls with no fallback)
-  2. phone_number parameter added to process_new_student — new families now get
-     a real contact number instead of NULL in the families table
-  3. Nearby insertion now checks cycle compatibility — a Kindergarten student
-     will NOT be placed on a Middle/High School bus just because it is nearby
-  4. Nearby insertion now checks max_stops_per_bus from scenario_config — a bus
-     that has hit its stop limit will not receive new insertions
-  5. Removed unused cursor variable (conn.execute() was used throughout)
+Production Upgrades:
+  • Safer Sibling Matching: Prioritizes exact phone number matches over proximity.
+  • Atomic Transactions: Uses BEGIN TRANSACTION to prevent ghost records.
+  • Thread-safe DB Connections: Enforced PRAGMA busy_timeout.
+  • Prevents capacity overflows and cycle-mixing violations mid-year.
 """
 
 import sqlite3
 import math
+import logging
 from config import (
     DATABASE,
     MAX_INSERTION_DISTANCE_METERS,
     SIBLING_DISTANCE_METERS,
     DEFAULT_MAX_STOPS_PER_BUS,
+    get_db_connection,
 )
+
+logger = logging.getLogger(__name__)
 
 
 # ============================================================
@@ -65,10 +59,7 @@ def check_bus_capacity(conn: sqlite3.Connection, bus_id: int, extra: int = 1) ->
 
 
 def check_bus_stop_count(conn: sqlite3.Connection, bus_id: int, max_stops: int) -> bool:
-    """
-    Return True if bus_id has fewer stops than max_stops.
-    Prevents mid-year insertions from silently exceeding the scenario stop limit.
-    """
+    """Return True if bus_id has fewer stops than max_stops."""
     count = conn.execute(
         "SELECT COUNT(*) FROM route_stops WHERE bus_id = ?", (bus_id,)
     ).fetchone()[0]
@@ -76,13 +67,7 @@ def check_bus_stop_count(conn: sqlite3.Connection, bus_id: int, max_stops: int) 
 
 
 def get_bus_cycle_profile(conn: sqlite3.Connection, bus_id: int) -> str:
-    """
-    Infer the effective cycle profile of a bus from its currently assigned families.
-    Returns 'KP', 'MH', 'MIXED', or 'EMPTY' (bus has no students yet).
-
-    This is used to prevent inserting a KP student onto an MH bus and
-    vice-versa, preserving the cycle separation policy mid-year.
-    """
+    """Infer the effective cycle profile of a bus from its currently assigned families."""
     profiles = conn.execute('''
         SELECT DISTINCT f.cycle_profile
         FROM route_stops rs
@@ -101,16 +86,7 @@ def get_bus_cycle_profile(conn: sqlite3.Connection, bus_id: int) -> str:
 
 
 def is_cycle_compatible(bus_profile: str, student_cycle: str) -> bool:
-    """
-    Return True if a student with the given cycle can board a bus
-    with the given cycle profile.
-
-    Rules:
-      EMPTY bus  — always accepts any student (first student sets the tone)
-      MIXED bus  — accepts any student
-      KP bus     — only accepts Kindergarten or Primary students
-      MH bus     — only accepts Middle or High School students
-    """
+    """Check if student cycle matches the bus profile rule."""
     if bus_profile in ('EMPTY', 'MIXED'):
         return True
     kp_cycles = {'Kindergarten', 'Primary'}
@@ -135,9 +111,6 @@ def get_max_stops_from_scenario(conn: sqlite3.Connection) -> int:
     return DEFAULT_MAX_STOPS_PER_BUS
 
 
-# ============================================================
-# FAMILY CYCLE PROFILE
-# ============================================================
 def update_family_cycle_profile(conn: sqlite3.Connection, family_id: int):
     """Recalculate and persist the cycle_profile for a family from its students."""
     cycles = [
@@ -175,17 +148,8 @@ def process_new_student(
     phone:      str = '0555-000-000',
 ) -> dict:
     """
-    Add a new student to the database and attempt to assign them to an
-    existing bus route without running the full optimizer.
-
-    Returns a status dict:
-    {
-        'status':              'auto_routed' | 'sibling_added' | 'bus_full' |
-                               'no_nearby_bus' | 'not_routed',
-        'message':             str,
-        'bus_id':              int | None,
-        'requires_reoptimize': bool
-    }
+    Add a new student to the DB and attempt to assign them to an
+    existing bus route atomically.
     """
     last_name  = last_name.strip().upper()
     first_name = first_name.strip()
@@ -193,31 +157,40 @@ def process_new_student(
     if phone in ('nan', 'None', ''):
         phone = '0555-000-000'
 
-    print(f"Processing: {first_name} {last_name} @ ({lat:.4f}, {lon:.4f}) - {cycle}")
+    logger.info(f"Processing: {first_name} {last_name} @ ({lat:.4f}, {lon:.4f}) - {cycle}")
 
-    # Single connection for the entire operation.
-    # try/finally guarantees it is closed on every exit path including exceptions.
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     try:
+        # Enforce concurrency safety
+        conn.execute("PRAGMA busy_timeout = 30000")
+        conn.execute("BEGIN TRANSACTION")
+
         # ----------------------------------------------------------------
-        # STEP 1: Sibling detection
-        # Look for an existing family with the same last name within 50m.
+        # STEP 1: Smart Sibling detection (Phone + Name, fallback to Radius)
         # ----------------------------------------------------------------
-        potential_families = conn.execute(
-            "SELECT id, family_name, latitude, longitude FROM families WHERE family_name = ?",
-            (last_name,)
-        ).fetchall()
+        potential_families = conn.execute('''
+            SELECT id, family_name, latitude, longitude, phone_number 
+            FROM families 
+            WHERE family_name = ?
+        ''', (last_name,)).fetchall()
 
         matched_family_id = None
         for fam in potential_families:
-            f_id, f_name, f_lat, f_lon = fam
+            f_id, f_name, f_lat, f_lon, f_phone = fam
+            
+            # 1st Priority: Exact Phone Match
+            if phone != '0555-000-000' and f_phone == phone:
+                matched_family_id = f_id
+                logger.info(f"  Exact Phone/Name match -> Family ID {f_id}")
+                break
+                
+            # 2nd Priority: Radius Match
             if haversine_meters(lat, lon, f_lat, f_lon) <= SIBLING_DISTANCE_METERS:
                 matched_family_id = f_id
-                print(f"  Sibling match -> Family ID {f_id}")
+                logger.warning(f"  Proximity Sibling match (No phone match) -> Family ID {f_id}. Verify manually.")
                 break
 
         if matched_family_id:
-            # Add student to existing family
             conn.execute(
                 "INSERT INTO students "
                 "(first_name, last_name, original_lat, original_lon, family_id, address, cycle) "
@@ -229,44 +202,33 @@ def process_new_student(
                 (matched_family_id,)
             )
             update_family_cycle_profile(conn, matched_family_id)
-            conn.commit()
 
             route = conn.execute(
                 "SELECT bus_id FROM route_stops WHERE family_id = ?",
                 (matched_family_id,)
             ).fetchone()
 
+            conn.commit()
+
             if route:
                 bus_id = route[0]
-                # extra=0: student already counted in the family's student_count above
                 if check_bus_capacity(conn, bus_id, 0):
-                    msg = (f"{first_name} added to Bus {bus_id} "
-                           f"(sibling match - no optimizer run needed).")
-                    print(f"  {msg}")
-                    return {'status': 'sibling_added', 'message': msg,
-                            'bus_id': bus_id, 'requires_reoptimize': False}
+                    msg = f"{first_name} added to Bus {bus_id} (sibling match - no optimizer run needed)."
+                    logger.info(f"  {msg}")
+                    return {'status': 'sibling_added', 'message': msg, 'bus_id': bus_id, 'requires_reoptimize': False}
                 else:
-                    msg = (f"{first_name} saved, but Bus {bus_id} is now over capacity. "
-                           f"Run the optimizer to rebalance.")
-                    print(f"  {msg}")
-                    return {'status': 'bus_full', 'message': msg,
-                            'bus_id': bus_id, 'requires_reoptimize': True}
+                    msg = f"{first_name} saved, but Bus {bus_id} is now over capacity. Run the optimizer to rebalance."
+                    logger.info(f"  {msg}")
+                    return {'status': 'bus_full', 'message': msg, 'bus_id': bus_id, 'requires_reoptimize': True}
             else:
-                msg = (f"{first_name} saved to existing family, but that family has "
-                       f"no active route yet. Run the optimizer to assign them.")
-                print(f"  {msg}")
-                return {'status': 'not_routed', 'message': msg,
-                        'bus_id': None, 'requires_reoptimize': True}
+                msg = f"{first_name} saved to existing family, but they have no active route. Run optimizer."
+                logger.info(f"  {msg}")
+                return {'status': 'not_routed', 'message': msg, 'bus_id': None, 'requires_reoptimize': True}
 
         # ----------------------------------------------------------------
         # STEP 2: Brand-new family — register, then try nearby insertion.
-        #
-        # Improvements over previous version:
-        #   - phone_number is now stored (was always NULL before)
-        #   - nearby search checks cycle compatibility (no KP on MH buses)
-        #   - nearby search checks max_stops limit from scenario_config
         # ----------------------------------------------------------------
-        print(f"  No sibling found. Registering as new family.")
+        logger.info(f"  No sibling found. Registering as new family.")
         conn.execute(
             "INSERT INTO families "
             "(family_name, latitude, longitude, student_count, phone_number, cycle_profile) "
@@ -274,6 +236,7 @@ def process_new_student(
             (last_name, lat, lon, phone)
         )
         new_family_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+        
         conn.execute(
             "INSERT INTO students "
             "(first_name, last_name, original_lat, original_lon, family_id, address, cycle) "
@@ -281,11 +244,9 @@ def process_new_student(
             (first_name, last_name, lat, lon, new_family_id, address, cycle)
         )
         update_family_cycle_profile(conn, new_family_id)
-        conn.commit()
 
-        # Read the scenario's stop limit so we don't insert into a full route
+        # Look for a nearby bus with space and correct cycle
         max_stops = get_max_stops_from_scenario(conn)
-
         active_stops = conn.execute('''
             SELECT rs.family_id, rs.bus_id, rs.stop_sequence, f.latitude, f.longitude
             FROM route_stops rs
@@ -299,18 +260,12 @@ def process_new_student(
             s_fam_id, s_bus_id, s_seq, s_lat, s_lon = stop
             dist = haversine_meters(lat, lon, s_lat, s_lon)
 
-            if dist >= min_dist:
-                continue   # not closer than current best
-
-            if not check_bus_capacity(conn, s_bus_id, 1):
-                continue   # bus is full
-
-            if not check_bus_stop_count(conn, s_bus_id, max_stops):
-                continue   # bus has hit its stop limit
+            if dist >= min_dist: continue
+            if not check_bus_capacity(conn, s_bus_id, 1): continue
+            if not check_bus_stop_count(conn, s_bus_id, max_stops): continue
 
             bus_profile = get_bus_cycle_profile(conn, s_bus_id)
-            if not is_cycle_compatible(bus_profile, cycle):
-                continue   # would break cycle separation policy
+            if not is_cycle_compatible(bus_profile, cycle): continue
 
             min_dist  = dist
             best_stop = stop
@@ -319,7 +274,6 @@ def process_new_student(
             s_fam_id, s_bus_id, s_seq, s_lat, s_lon = best_stop
             new_seq = s_seq + 1
 
-            # Shift all subsequent stops to make room
             conn.execute(
                 "UPDATE route_stops SET stop_sequence = stop_sequence + 1 "
                 "WHERE bus_id = ? AND stop_sequence >= ?",
@@ -331,38 +285,33 @@ def process_new_student(
                 "VALUES (?, ?, ?, ?)",
                 (s_bus_id, new_family_id, new_seq, "TBD - run optimizer for exact ETA")
             )
-            # Invalidate travel-time cache — HERE API must be re-fetched for this family
-            conn.execute(
-                "DELETE FROM travel_times_morning   WHERE family_id = ?", (new_family_id,)
-            )
-            conn.execute(
-                "DELETE FROM travel_times_afternoon WHERE family_id = ?", (new_family_id,)
-            )
+            # Invalidate cache so HERE API refetches this family
+            conn.execute("DELETE FROM travel_times_morning WHERE family_id = ?", (new_family_id,))
+            conn.execute("DELETE FROM travel_times_afternoon WHERE family_id = ?", (new_family_id,))
+            
             conn.commit()
 
-            msg = (f"{first_name} inserted into Bus {s_bus_id} "
-                   f"(nearest compatible stop was {int(min_dist)}m away). "
-                   f"Run the optimizer soon to recalculate exact ETAs.")
-            print(f"  {msg}")
-            return {'status': 'auto_routed', 'message': msg,
-                    'bus_id': s_bus_id, 'requires_reoptimize': True}
+            msg = f"{first_name} inserted into Bus {s_bus_id} ({int(min_dist)}m away). Run optimizer soon to fix ETAs."
+            logger.info(f"  {msg}")
+            return {'status': 'auto_routed', 'message': msg, 'bus_id': s_bus_id, 'requires_reoptimize': True}
 
-        # No compatible nearby bus found
-        msg = (f"{first_name} saved to database but could not be auto-assigned. "
-               f"No compatible bus with free seats was found within "
-               f"{MAX_INSERTION_DISTANCE_METERS}m. "
-               f"Run the optimizer to assign them.")
-        print(f"  {msg}")
-        return {'status': 'no_nearby_bus', 'message': msg,
-                'bus_id': None, 'requires_reoptimize': True}
+        # ----------------------------------------------------------------
+        # STEP 3: No nearby bus found, save as unassigned.
+        # ----------------------------------------------------------------
+        conn.commit()
+        msg = f"{first_name} saved. No compatible bus with free seats found within {MAX_INSERTION_DISTANCE_METERS}m. Run optimizer."
+        logger.info(f"  {msg}")
+        return {'status': 'no_nearby_bus', 'message': msg, 'bus_id': None, 'requires_reoptimize': True}
+
+    except Exception as e:
+        conn.rollback()
+        logger.error(f"Failed to process new student: {e}")
+        return {'status': 'error', 'message': f'Database error: {str(e)}', 'bus_id': None, 'requires_reoptimize': False}
 
     finally:
-        conn.close()   # Always executes — the only conn.close() needed
+        conn.close()
 
 
-# ============================================================
-# CLI USAGE
-# ============================================================
 if __name__ == "__main__":
     import sys
     if len(sys.argv) >= 5:

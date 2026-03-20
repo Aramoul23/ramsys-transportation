@@ -87,10 +87,10 @@ def import_students_and_detect_siblings(excel_file='sample_students.xlsx', db_fi
         if assigned_family_id is None:
             # Create a brand new family
             cursor.execute('''
-                INSERT INTO families (family_name, latitude, longitude, student_count, zone)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (last_name, lat, lon, 1, zone))
-            
+                INSERT INTO families (family_name, latitude, longitude, student_count, zone, phone_number, cycle_profile)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (last_name, lat, lon, 1, zone, '0555-000-000', 'MIXED'))
+
             assigned_family_id = cursor.lastrowid
             
             new_family_record = {
@@ -117,9 +117,9 @@ def import_students_and_detect_siblings(excel_file='sample_students.xlsx', db_fi
 
     # Insert all students
     cursor.executemany('''
-        INSERT INTO students (first_name, last_name, family_id, original_lat, original_lon, is_active)
-        VALUES (?, ?, ?, ?, ?, ?)
-    ''', student_insert_records)
+        INSERT INTO students (first_name, last_name, family_id, original_lat, original_lon, is_active, address, cycle)
+        VALUES (?, ?, ?, ?, ?, 1, ?, ?)
+    ''', [(s[0], s[1], s[2], s[3], s[4], 'Ali Mendjeli, Constantine', 'Primary') for s in student_insert_records])
 
     conn.commit()
     

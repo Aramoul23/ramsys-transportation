@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Driver Route Selection | Ramsys</title>
+    <title>Driver Login | Ramsys</title>
     <style>
         :root {
-            --primary: #2563eb;
+            --primary: #0f172a;
+            --accent: #2563eb;
             --surface: #ffffff;
             --bg: #f8fafc;
             --text-main: #0f172a;
@@ -19,111 +20,73 @@
             color: var(--text-main);
             margin: 0;
             padding: 0;
-            line-height: 1.5;
         }
         
         .header {
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%);
             color: white;
-            padding: 20px;
+            padding: 24px 20px;
             text-align: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
-        .header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
+        .header h1 { margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+        .header p { margin: 6px 0 0 0; color: #cbd5e1; font-size: 0.9rem; }
         
-        .container {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+        .container { padding: 24px 16px; max-width: 600px; margin: 0 auto; }
         
         .instruction {
-            text-align: center;
-            color: var(--text-muted);
-            margin-bottom: 24px;
-            font-size: 1.1rem;
+            text-align: center; color: var(--text-main); font-weight: 600;
+            margin-bottom: 20px; font-size: 1.1rem;
         }
         
-        .bus-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .bus-list { display: flex; flex-direction: column; gap: 12px; }
         
         .bus-card {
-            background: var(--surface);
-            border-radius: 12px;
-            padding: 20px;
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
-            transition: transform 0.1s, box-shadow 0.1s;
+            background: var(--surface); border-radius: 12px; padding: 20px;
+            text-decoration: none; color: inherit; display: flex;
+            justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0; transition: 0.1s;
         }
+        .bus-card:active { transform: scale(0.98); background: #f1f5f9; border-color: var(--accent); }
         
-        .bus-card:active {
-            transform: scale(0.98);
-            background: #f1f5f9;
-        }
+        .bus-info h2 { margin: 0 0 6px 0; font-size: 1.2rem; color: var(--accent); }
+        .bus-meta { margin: 0; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
         
-        .bus-info h2 {
-            margin: 0 0 4px 0;
-            font-size: 1.25rem;
-        }
-        
-        .bus-meta {
-            margin: 0;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-        
-        .chevron {
-            color: var(--text-muted);
-            font-size: 1.5rem;
-        }
+        .chevron { color: var(--accent); font-size: 1.8rem; font-weight: bold; }
 
         .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            background: white;
-            border-radius: 12px;
-            border: 1px dashed #cbd5e1;
-            color: var(--text-muted);
+            text-align: center; padding: 40px 20px; background: white;
+            border-radius: 12px; border: 2px dashed #cbd5e1; color: var(--text-muted);
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>Ramsys Transport</h1>
+        <h1>🚌 Ramsys Transport</h1>
+        <p>Driver Navigation Portal</p>
     </div>
 
     <div class="container">
-        <p class="instruction">Select your bus to view today's route:</p>
+        <p class="instruction">Select your assigned vehicle:</p>
 
         <div class="bus-list">
             {% if buses %}
                 {% for bus in buses %}
                 <a href="/driver/{{ bus.id }}" class="bus-card">
                     <div class="bus-info">
-                        <h2>{{ bus.driver_name }} (Bus {{ bus.id }})</h2>
-                        <p class="bus-meta">{{ bus.bus_type }} • {{ bus.capacity }} Seats</p>
+                        <h2>{{ bus.driver_name }}</h2>
+                        <p class="bus-meta">Bus {{ bus.id }} • {{ bus.bus_type }} ({{ bus.capacity }} Seats)</p>
                     </div>
                     <div class="chevron">›</div>
                 </a>
                 {% endfor %}
             {% else %}
                 <div class="empty-state">
-                    <h3>No Active Routes Found</h3>
-                    <p>The optimizer has not been run or no students are assigned to active buses today.</p>
+                    <h3 style="color: var(--text-main);">No Active Routes</h3>
+                    <p>The dispatcher has not generated today's routes yet. Please check back later.</p>
                 </div>
             {% endif %}
         </div>

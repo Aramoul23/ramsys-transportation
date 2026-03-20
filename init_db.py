@@ -13,10 +13,13 @@ import sqlite3
 import os
 import sys
 import shutil
+import logging
 from datetime import datetime
 from config import DATABASE, DEFAULT_CYCLE_SEPARATION, DEFAULT_MAX_STOPS_PER_BUS
 from config import DEFAULT_MAX_ROUTE_MINUTES, DEFAULT_SOLVER_TIME_LIMIT_SECS
 from config import DEFAULT_MIN_BUS_UTILIZATION_PCT, DEFAULT_ALLOW_SIBLING_MIXING
+
+logger = logging.getLogger(__name__)
 
 
 def create_database(force=False):
@@ -25,28 +28,27 @@ def create_database(force=False):
     # --------------------------------------------------------
     if os.path.exists(DATABASE):
         if not force:
-            print(f"⚠️  Database '{DATABASE}' already exists.")
-            print("    Use --force flag to destroy and recreate it.")
-            print("    Example: python init_db.py --force")
+            logger.warning(f"Database '{DATABASE}' already exists.")
+            logger.warning("Use --force flag to destroy and recreate it.")
             return False
 
-        # Create a timestamped backup before destroying
         backup_name = f"{DATABASE}.backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         shutil.copy2(DATABASE, backup_name)
-        print(f"📦 Backup saved → {backup_name}")
+        logger.info(f"Backup saved → {backup_name}")
 
         answer = input(f"⚠️  This will DELETE all data in '{DATABASE}'. Type YES to confirm: ")
         if answer.strip() != "YES":
-            print("❌ Aborted. Database untouched.")
+            logger.info("Aborted. Database untouched.")
             return False
 
         os.remove(DATABASE)
-        print(f"🗑️  Old database removed.")
+        logger.info(f"Old database removed.")
 
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
-    cursor.execute("PRAGMA journal_mode=WAL")   # Better concurrency
+    cursor.execute("PRAGMA journal_mode=WAL")
     cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.execute("PRAGMA busy_timeout=30000")
 
     # --------------------------------------------------------
     # 1. FAMILIES — routing nodes (one per home address)
@@ -61,9 +63,6 @@ def create_database(force=False):
         zone           TEXT    DEFAULT "Unknown",
         phone_number   TEXT,
         cycle_profile  TEXT    DEFAULT "MIXED"
-        -- cycle_profile: "KP" (Kindergarten+Primary only)
-        --                "MH" (Middle+High School only)
-        --                "MIXED" (has children in both groups)
     )
     ''')
 
@@ -81,7 +80,6 @@ def create_database(force=False):
         is_active    BOOLEAN DEFAULT 1,
         address      TEXT,
         cycle        TEXT    DEFAULT "Primary",
-        -- cycle: "Kindergarten", "Primary", "Middle", "High School"
         FOREIGN KEY (family_id) REFERENCES families (id)
     )
     ''')
@@ -109,6 +107,8 @@ def create_database(force=False):
         family_id             INTEGER NOT NULL,
         stop_sequence         INTEGER NOT NULL,
         estimated_pickup_time TEXT    NOT NULL,
+        session               TEXT    NOT NULL DEFAULT 'morning',
+        departure_time        TEXT,
         FOREIGN KEY (bus_id)    REFERENCES buses    (id),
         FOREIGN KEY (family_id) REFERENCES families (id)
     )
@@ -146,7 +146,6 @@ def create_database(force=False):
     )
     ''')
 
-    # Seed with default scenario values (only if table was just created)
     scenario_defaults = [
         ('cycle_separation',        'true' if DEFAULT_CYCLE_SEPARATION else 'false',
          'Separate Kindergarten/Primary from Middle/High School buses'),
@@ -167,8 +166,30 @@ def create_database(force=False):
     )
 
     # --------------------------------------------------------
-    # 7. INDEXES — critical for query performance at 300+ students
+    # 7. TRIP EVENTS — driver attendance tracking
+    #    family_id has NO FK constraint: metadata events use family_id=0
     # --------------------------------------------------------
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS trip_events (
+        id               INTEGER PRIMARY KEY AUTOINCREMENT,
+        bus_id           INTEGER  NOT NULL,
+        family_id        INTEGER  NOT NULL,
+        stop_sequence    INTEGER  NOT NULL,
+        event_type       TEXT     NOT NULL,
+        boarded_count    INTEGER  DEFAULT 0,
+        absent_count     INTEGER  DEFAULT 0,
+        boarded_names    TEXT,
+        absent_names     TEXT,
+        actual_time      TEXT     NOT NULL,
+        session          TEXT     DEFAULT 'morning',
+        notes            TEXT
+    )
+    ''')
+
+    # --------------------------------------------------------
+    # 8. INDEXES — critical for query performance at 300+ students
+    # --------------------------------------------------------
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_trip_events_bus_date ON trip_events (bus_id, actual_time)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_route_stops_bus    ON route_stops(bus_id)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_route_stops_family ON route_stops(family_id)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_students_family    ON students(family_id)')
@@ -180,22 +201,28 @@ def create_database(force=False):
     # 8. SEED FLEET — initial buses (edit to match real fleet)
     # --------------------------------------------------------
     buses_data = [
-        ('Driver Ahmed',             30, 'standard', 1),
-        ('Driver Karim',             30, 'standard', 1),
-        ('Driver Youssef',           30, 'standard', 1),
-        ('Driver Omar',              30, 'standard', 1),
-        ('Driver Bilal',             30, 'standard', 1),
-        ('Driver Samir',             30, 'standard', 1),
-        ('Driver Ali',               30, 'standard', 1),
-        ('Driver Hassan',            30, 'standard', 1),
-        ('Driver Tarik',             30, 'standard', 1),
-        ('Driver Mourad',            30, 'standard', 1),
-        ('Driver Nabil (Mini)',       12, 'mini',     1),
-        ('Driver Farid (Mini)',       12, 'mini',     1),
-        ('Driver Yacine (Mini)',      12, 'mini',     1),
-        ('Driver Kamel (Mini)',       12, 'mini',     1),
-        ('Driver Said (Mini)',        12, 'mini',     1),
-    ]
+        ('Driver Ahmed', 30, 'standard', 1),
+        ('Driver Karim', 30, 'standard', 1),
+        ('Driver Omar', 30, 'standard', 1),
+        ('Driver Youssef', 30, 'standard', 1),
+        ('Driver Bilal', 30, 'standard', 1),
+        ('Driver Samir', 30, 'standard', 1),
+        ('Driver Ali', 30, 'standard', 1),
+        ('Driver Hassan', 30, 'standard', 1),
+        ('Driver Tarik', 30, 'standard', 1),
+        ('Driver Mourad', 30, 'standard', 1),
+        ('Driver Rachid', 30, 'standard', 1),
+        ('Driver Hocine', 30, 'standard', 1),
+        ('Driver Sofiane', 30, 'standard', 1),
+        ('Driver Abdelkader', 30, 'standard', 1),
+        ('Driver Djamel', 30, 'standard', 1),
+        ('Driver Khaled', 25, 'coaster', 1),
+        ('Driver Larbi', 25, 'coaster', 1),
+        ('Driver Moussa', 25, 'coaster', 1),
+        ('Driver Nabil Mini', 12, 'mini', 1),
+        ('Driver Farid Mini', 12, 'mini', 1),
+        ('Driver Yacine Mini', 12, 'mini', 1),
+    ]  # Total: 15x30 + 3x25 + 3x12 = 561 seats
     cursor.executemany(
         'INSERT INTO buses (driver_name, capacity, bus_type, is_active) VALUES (?, ?, ?, ?)',
         buses_data
@@ -203,10 +230,11 @@ def create_database(force=False):
 
     conn.commit()
     conn.close()
-    print(f"✅ Database '{DATABASE}' created successfully with full schema, indexes, and seed data.")
+    logger.info(f"Database '{DATABASE}' created successfully with full schema, indexes, and seed data.")
     return True
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     force_flag = "--force" in sys.argv
     create_database(force=force_flag)
